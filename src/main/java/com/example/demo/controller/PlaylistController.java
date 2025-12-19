@@ -29,6 +29,13 @@ public class PlaylistController {
         this.trackService = trackService;
 
     }
+    @PutMapping("/{id}")
+    public Playlist updatePlaylist(
+            @PathVariable Long id,
+            @RequestBody Playlist playlist
+    ) {
+        return playlistService.updateName(id, playlist.getName());
+    }
 
     @PostMapping("/add")
     public Playlist addPlaylist(@RequestParam String name, @RequestParam Long userId) {
@@ -87,12 +94,6 @@ public class PlaylistController {
     @GetMapping("/{playlistId}/details")
     public PlaylistDetailsDto getDetails(@PathVariable Long playlistId) {
         return playlistService.getPlaylistDetails(playlistId);
-    }
-    @PutMapping("/{id}")
-    public Playlist update(@PathVariable Long id,
-                           @RequestParam(required = false) String name,
-                           @RequestParam(required = false) Long userId) {
-        return playlistService.update(id, name, userId);
     }
 
     @DeleteMapping("/{id}")

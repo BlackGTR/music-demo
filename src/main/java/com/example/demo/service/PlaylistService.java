@@ -164,19 +164,14 @@ public class PlaylistService {
             }
         }
     }
-    public Playlist update(Long id, String name, Long userId) {
+    public Playlist updateName(Long id, String name) {
         Playlist playlist = playlistRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Playlist not found"));
 
-        if (name != null) playlist.setName(name);
-        if (userId != null) {
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-            playlist.setUser(user);
-        }
-
+        playlist.setName(name);
         return playlistRepository.save(playlist);
     }
+
     public void delete(Long playlistId) {
         playlistRepository.deleteById(playlistId);
     }

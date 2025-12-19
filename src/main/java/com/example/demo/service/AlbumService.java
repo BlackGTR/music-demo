@@ -19,6 +19,13 @@ public class AlbumService {
         this.albumRepository = albumRepository;
         this.artistRepository = artistRepository;
     }
+    public Album updateTitle(Long id, String title) {
+        Album album = albumRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Album not found"));
+
+        album.setTitle(title);
+        return albumRepository.save(album);
+    }
 
     public Album addAlbum(String title, Artist artist) {
         Album album = new Album();
@@ -37,20 +44,7 @@ public class AlbumService {
     public Album findById(Long id) {
         return albumRepository.findById(id).orElse(null);
     }
-    public Album update(Long id, String title, Long artistId) {
-        Album album = findById(id);
 
-        if (title != null) {
-            album.setTitle(title);
-        }
-        if (artistId != null) {
-            Artist artist = artistRepository.findById(artistId)
-                    .orElseThrow(() -> new RuntimeException("Artist not found"));
-            album.setArtist(artist);
-        }
-
-        return albumRepository.save(album);
-    }
     public void delete(Long id) {
         albumRepository.deleteById(id);
     }

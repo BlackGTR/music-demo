@@ -19,6 +19,13 @@ public class AlbumController {
         this.albumService = albumService;
         this.artistService = artistService;
     }
+    @PutMapping("/{id}")
+    public Album updateAlbum(
+            @PathVariable Long id,
+            @RequestBody Album album
+    ) {
+        return albumService.updateTitle(id, album.getTitle());
+    }
 
     @PostMapping("/add")
     public Album addAlbum(@RequestParam String title, @RequestParam Long artistId) {
@@ -37,12 +44,6 @@ public class AlbumController {
         return albumService.findById(id);
     }
 
-    @PutMapping("/{id}")
-    public Album update(@PathVariable Long id,
-                        @RequestParam(required = false) String title,
-                        @RequestParam(required = false) Long artistId) {
-        return albumService.update(id, title, artistId);
-    }
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         albumService.delete(id);

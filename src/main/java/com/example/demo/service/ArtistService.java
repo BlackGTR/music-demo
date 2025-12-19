@@ -20,20 +20,19 @@ public class ArtistService {
         artist.setName(name);
         return artistRepository.save(artist);
     }
+    public Artist updateName(Long id, String name) {
+        Artist artist = artistRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Artist not found"));
 
+        artist.setName(name);
+        return artistRepository.save(artist);
+    }
     public List<Artist> getAll() {
         return artistRepository.findAll();
     }
 
     public Artist findById(Long id) {
-        return artistRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Artist not found"));
-    }
-
-    public Artist update(Long id, String name) {
-        Artist artist = findById(id);
-        artist.setName(name);
-        return artistRepository.save(artist);
+        return artistRepository.findById(id).orElse(null);
     }
 
     public void delete(Long id) {

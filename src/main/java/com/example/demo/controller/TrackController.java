@@ -30,6 +30,13 @@ public class TrackController {
         this.albumService = albumService;
         this.playlistService = playlistService;
     }
+    @PutMapping("/{id}")
+    public Track updateTrack(
+            @PathVariable Long id,
+            @RequestBody Track track
+    ) {
+        return trackService.update(id, track.getTitle(), track.getDuration());
+    }
 
     @PostMapping("/add")
     public Track addTrack(@RequestParam String title,
@@ -64,14 +71,7 @@ public class TrackController {
             return dto;
         }).toList();
     }
-    @PutMapping("/{id}")
-    public Track updateTrack(@PathVariable Long id,
-                             @RequestParam(required = false) String title,
-                             @RequestParam(required = false) String duration,
-                             @RequestParam(required = false) Long artistId,
-                             @RequestParam(required = false) Long albumId) {
-        return trackService.update(id, title, duration, artistId, albumId);
-    }
+
     // бизнес-операция №5: удалить трек из всех плейлистов
     @DeleteMapping("/{trackId}/remove-from-all-playlists")
     public void removeFromAllPlaylists(@PathVariable Long trackId) {

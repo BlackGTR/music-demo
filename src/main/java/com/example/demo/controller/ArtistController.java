@@ -19,7 +19,13 @@ public class ArtistController {
         this.service = service;
         this.albumService = albumService; // ← добавили
     }
-
+    @PutMapping("/{id}")
+    public Artist updateArtist(
+            @PathVariable Long id,
+            @RequestBody Artist artist
+    ) {
+        return service.updateName(id, artist.getName());
+    }
     @PostMapping("/add")
     public Artist addArtist(@RequestParam String name) {
         return service.addArtist(name);
@@ -40,11 +46,7 @@ public class ArtistController {
     public List<Album> getAlbumsByArtist(@PathVariable Long artistId) {
         return albumService.findByArtistId(artistId);
     }
-    @PutMapping("/{id}")
-    public Artist update(@PathVariable Long id,
-                         @RequestParam String name) {
-        return service.update(id, name);
-    }
+
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         service.delete(id);
