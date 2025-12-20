@@ -12,6 +12,8 @@ import com.example.demo.repository.TrackRepository;
 import com.example.demo.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,7 +85,23 @@ public class PlaylistService {
 
         return playlistRepository.save(playlist);
     }
+    private String currentUsername() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth.getName(); // username из BasicAuth
+    }
+    private void assertOwnerOrAdmin(Playlist playlist) {
+        String username = currentUsername();
 
+        boolean isAdmin = SecurityContextHolder.getContext().getAuthentication()
+                .getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (isAdmin) return;
+
+        if (playlist.getUser() == null || !username.equals(playlist.getUser().getUsername())) {
+            throw new RuntimeException("Это не ваш плейлист!");
+        }
+    }
     // 2) Клонировать плейлист (можно другому пользователю, с другим именем)
     @Transactional
     public Playlist clonePlaylist(Long playlistId, Long targetUserId, String newName) {
@@ -165,11 +183,12 @@ public class PlaylistService {
         }
     }
     public Playlist updateName(Long id, String name) {
-        Playlist playlist = playlistRepository.findById(id)
+        Playlist p = playlistRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Playlist not found"));
+        assertOwnerOrAdmin(p);
 
-        playlist.setName(name);
-        return playlistRepository.save(playlist);
+        p.setName(name);
+        return playlistRepository.save(p);
     }
 
     public void delete(Long playlistId) {
