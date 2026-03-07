@@ -358,8 +358,17 @@
         {
           "name": "2. Clone Playlist",
           "request": {
+<<<<<<< Updated upstream
             "method": "POST",
             "url": "http://localhost:8080/playlists/1/clone?targetUserId=2&newName=ClonedPlaylist"
+=======
+            "auth": {
+              "type": "bearer",
+              "bearer": [ { "key": "token", "value": "{{accessToken}}", "type": "string" } ]
+            },
+            "method": "POST",
+            "url": "http://localhost:8080/playlists/1/clone?targetUserId=4&newName=ClonedPlaylist"
+>>>>>>> Stashed changes
           }
         },
         {
