@@ -4,7 +4,9 @@ import com.example.demo.model.Album;
 import com.example.demo.model.Artist;
 import com.example.demo.model.Track;
 import com.example.demo.repository.TrackRepository;
+import com.example.demo.service.PlaylistService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -12,9 +14,12 @@ import java.util.List;
 public class TrackService {
 
     private final TrackRepository trackRepository;
+    private final PlaylistService playlistService;
 
-    public TrackService(TrackRepository trackRepository) {
+    public TrackService(TrackRepository trackRepository,
+                        PlaylistService playlistService) {
         this.trackRepository = trackRepository;
+        this.playlistService = playlistService;
     }
 
     public Track addTrack(String title, String duration, Artist artist, Album album) {
@@ -42,7 +47,9 @@ public class TrackService {
         return trackRepository.findById(id).orElse(null);
     }
 
+    @Transactional
     public void delete(Long id) {
+        playlistService.removeTrackFromAllPlaylists(id);
         trackRepository.deleteById(id);
     }
 }

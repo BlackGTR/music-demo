@@ -63,10 +63,12 @@ public class PlaylistService {
     public void removeTrack(Long playlistId, Long trackId) {
         Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new RuntimeException("Playlist not found"));
-        Track track = trackRepository.findById(trackId)
+        trackRepository.findById(trackId)
                 .orElseThrow(() -> new RuntimeException("Track not found"));
-        playlist.getTracks().remove(track);
-        playlistRepository.save(playlist);
+        boolean removed = playlist.getTracks().removeIf(t -> t.getId().equals(trackId));
+        if (removed) {
+            playlistRepository.save(playlist);
+        }
     }
     @Transactional
     public Playlist createPlaylistWithTracks(CreatePlaylistRequest request) {
@@ -102,7 +104,7 @@ public class PlaylistService {
             throw new RuntimeException("Это не ваш плейлист!");
         }
     }
-    // 2) Клонировать плейлист (можно другому пользователю, с другим именем)
+
     @Transactional
     public Playlist clonePlaylist(Long playlistId, Long targetUserId, String newName) {
         Playlist original = playlistRepository.findById(playlistId)
@@ -120,8 +122,9 @@ public class PlaylistService {
                 : original.getName() + " (copy)");
         copy.setUser(owner);
 
-        // копируем треки
-        copy.getTracks().addAll(original.getTracks());
+
+        List<Track> originalTracks = new ArrayList<>(original.getTracks());
+        copy.setTracks(new ArrayList<>(originalTracks));
 
         return playlistRepository.save(copy);
     }
@@ -172,12 +175,13 @@ public class PlaylistService {
     // 5) Удалить трек из всех плейлистов
     @Transactional
     public void removeTrackFromAllPlaylists(Long trackId) {
-        Track track = trackRepository.findById(trackId)
+        trackRepository.findById(trackId)
                 .orElseThrow(() -> new IllegalArgumentException("Track not found"));
 
         List<Playlist> allPlaylists = playlistRepository.findAll();
         for (Playlist playlist : allPlaylists) {
-            if (playlist.getTracks().remove(track)) {
+            boolean removed = playlist.getTracks().removeIf(t -> t.getId().equals(trackId));
+            if (removed) {
                 playlistRepository.save(playlist);
             }
         }

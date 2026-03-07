@@ -59,6 +59,12 @@ public class TrackController {
     public Track getById(@PathVariable Long id) {
         return trackService.findById(id);
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteTrack(@PathVariable Long id) {
+        trackService.delete(id);
+    }
+
     @GetMapping("/with-ids")
     public List<TrackDto> getAllWithIds() {
         return trackService.getAll().stream().map(track -> {

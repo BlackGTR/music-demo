@@ -22,7 +22,7 @@ public class UserService {
         User user = new User();
         user.setUsername(username);
         // ДОБАВИЛИ: чтобы сущность проходила @Column(nullable=false)
-        user.setPassword(passwordEncoder.encode("123456789")); // лучше не использовать в реале, но чтобы не падало
+        user.setPassword(passwordEncoder.encode("123456789"));
         user.setRole("ROLE_USER");
 
         return userRepository.save(user);
