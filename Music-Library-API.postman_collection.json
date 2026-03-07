@@ -1,0 +1,459 @@
+{
+  "info": {
+    "name": "Music Library API",
+    "description": "Коллекция для тестирования Music Library REST API.\n\n1. Auth → Register (первый = ADMIN) или Login\n2. Токен сохранится в {{accessToken}}\n3. Artists/Albums/Tracks: Create/Update/Delete требует ADMIN",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      { "key": "token", "value": "{{accessToken}}", "type": "string" }
+    ]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "baseURL", "value": "http://localhost:8080" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"Admin123!\"\n}"
+            },
+            "url": "http://localhost:8080/auth/register"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var j = pm.response.json();",
+                  "  pm.collectionVariables.set('accessToken', j.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', j.refreshToken);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"Admin123!\"\n}"
+            },
+            "url": "http://localhost:8080/auth/login"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var j = pm.response.json();",
+                  "  pm.collectionVariables.set('accessToken', j.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', j.refreshToken);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": "http://localhost:8080/auth/refresh"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var j = pm.response.json();",
+                  "  pm.collectionVariables.set('accessToken', j.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', j.refreshToken);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Users (CRUD)",
+      "item": [
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:8080/users/add?username=NewUser"
+          }
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:8080/users"
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:8080/users/1"
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "url": "http://localhost:8080/users/1?username=UpdatedName"
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "url": "http://localhost:8080/users/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Artists (CRUD) - нужен ADMIN",
+      "item": [
+        {
+          "name": "Create Artist",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:8080/artists/add?name=ArtistName"
+          }
+        },
+        {
+          "name": "Get All Artists",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:8080/artists"
+          }
+        },
+        {
+          "name": "Get Artist by ID",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:8080/artists/1"
+          }
+        },
+        {
+          "name": "Get Albums by Artist",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:8080/artists/1/albums"
+          }
+        },
+        {
+          "name": "Update Artist",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\"name\": \"UpdatedArtistName\"}" },
+            "url": "http://localhost:8080/artists/1"
+          }
+        },
+        {
+          "name": "Delete Artist",
+          "request": {
+            "method": "DELETE",
+            "url": "http://localhost:8080/artists/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Albums (CRUD) - нужен ADMIN",
+      "item": [
+        {
+          "name": "Create Album",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:8080/albums/add?title=AlbumTitle&artistId=1"
+          }
+        },
+        {
+          "name": "Get All Albums",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:8080/albums"
+          }
+        },
+        {
+          "name": "Get Album by ID",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:8080/albums/1"
+          }
+        },
+        {
+          "name": "Update Album",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\"title\": \"UpdatedAlbumTitle\"}" },
+            "url": "http://localhost:8080/albums/1"
+          }
+        },
+        {
+          "name": "Delete Album",
+          "request": {
+            "method": "DELETE",
+            "url": "http://localhost:8080/albums/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tracks (CRUD) - нужен ADMIN",
+      "item": [
+        {
+          "name": "Create Track",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:8080/tracks/add?title=TrackTitle&duration=3:20&artistId=1&albumId=1"
+          }
+        },
+        {
+          "name": "Get All Tracks",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:8080/tracks"
+          }
+        },
+        {
+          "name": "Get Track by ID",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:8080/tracks/1"
+          }
+        },
+        {
+          "name": "Get Tracks with IDs",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:8080/tracks/with-ids"
+          }
+        },
+        {
+          "name": "Update Track",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\"title\": \"UpdatedTrackTitle\", \"duration\": \"4:00\"}" },
+            "url": "http://localhost:8080/tracks/1"
+          }
+        },
+        {
+          "name": "Remove Track from All Playlists",
+          "request": {
+            "method": "DELETE",
+            "url": "http://localhost:8080/tracks/1/remove-from-all-playlists"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Playlists (CRUD) - USER или ADMIN",
+      "item": [
+        {
+          "name": "Create Playlist",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:8080/playlists/add?name=MyPlaylist&userId=1"
+          }
+        },
+        {
+          "name": "Add Track to Playlist",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:8080/playlists/1/addTrack?trackId=1"
+          }
+        },
+        {
+          "name": "Remove Track from Playlist",
+          "request": {
+            "method": "DELETE",
+            "url": "http://localhost:8080/playlists/1/removeTrack/1"
+          }
+        },
+        {
+          "name": "Get All Playlists",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:8080/playlists"
+          }
+        },
+        {
+          "name": "Get Playlist by ID",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:8080/playlists/1"
+          }
+        },
+        {
+          "name": "Update Playlist",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\"name\": \"UpdatedPlaylistName\"}" },
+            "url": "http://localhost:8080/playlists/1"
+          }
+        },
+        {
+          "name": "Delete Playlist",
+          "request": {
+            "method": "DELETE",
+            "url": "http://localhost:8080/playlists/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Бизнес-операции",
+      "item": [
+        {
+          "name": "1. Create Playlist with Tracks",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\": \"Workout\", \"userId\": 1, \"trackIds\": [1, 2, 3]}"
+            },
+            "url": "http://localhost:8080/playlists/create-with-tracks"
+          }
+        },
+        {
+          "name": "2. Clone Playlist",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:8080/playlists/1/clone?targetUserId=2&newName=ClonedPlaylist"
+          }
+        },
+        {
+          "name": "3. Add Album to Playlist",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:8080/playlists/1/add-album/1"
+          }
+        },
+        {
+          "name": "4. Remove Track from All Playlists",
+          "request": {
+            "method": "DELETE",
+            "url": "http://localhost:8080/tracks/1/remove-from-all-playlists"
+          }
+        },
+        {
+          "name": "5. Get Playlist Details",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:8080/playlists/1/details"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Сценарий JWT (Задание 5)",
+      "item": [
+        {
+          "name": "Step 1 - Login",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\"username\": \"admin\", \"password\": \"Admin123!\"}" },
+            "url": "http://localhost:8080/auth/login"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var j = pm.response.json();",
+                  "  pm.collectionVariables.set('accessToken', j.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', j.refreshToken);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Step 2 - Protected Endpoint",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:8080/tracks"
+          }
+        },
+        {
+          "name": "Step 3 - Refresh",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\"refreshToken\": \"{{refreshToken}}\"}" },
+            "url": "http://localhost:8080/auth/refresh"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var j = pm.response.json();",
+                  "  pm.collectionVariables.set('accessToken', j.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', j.refreshToken);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Step 4 - Refresh со старым токеном (должен 403)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\"refreshToken\": \"СЮДА_ВСТАВЬ_СТАРЫЙ_REFRESH\"}" },
+            "url": "http://localhost:8080/auth/refresh"
+          }
+        }
+      ]
+    }
+  ]
+}
