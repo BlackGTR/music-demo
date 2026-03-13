@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### TLS (Задание 6) — НЕ коммитить приватные ключи и keystore
+certs/*.p12
+certs/*.jks
+target/

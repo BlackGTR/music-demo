@@ -1,0 +1,37 @@
+# GitLab CI (Задание 6)
+# Секреты: DB_PASSWORD, JWT_SECRET в Settings → CI/CD → Variables
+
+stages: [ build, test, package ]
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths: [ .m2/repository ]
+
+build:
+  stage: build
+  image: maven:3.9-eclipse-temurin-17
+  script:
+    - mvn -B compile
+  artifacts:
+    paths: [ target/ ]
+
+test:
+  stage: test
+  image: maven:3.9-eclipse-temurin-17
+  script:
+    - mvn -B test
+  variables:
+    DB_PASSWORD: $DB_PASSWORD
+    JWT_SECRET: $JWT_SECRET
+
+package:
+  stage: package
+  image: maven:3.9-eclipse-temurin-17
+  script:
+    - mvn -B package -DskipTests
+  artifacts:
+    paths: [ target/demo-*.jar ]
+    name: "music-library-$CI_COMMIT_SHORT_SHA"
